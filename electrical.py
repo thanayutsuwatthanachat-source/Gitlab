@@ -8,8 +8,15 @@ def _validate_positive(value, name):
         raise ValueError(f"{name} must be greater than zero")
 
 
+def _validate_nonnegative(value, name):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{name} must be a number")
+    if not math.isfinite(value) or value < 0:
+        raise ValueError(f"{name} must be zero or greater")
+
+
 def analyze_dc(voltage_v, resistance_ohm):
-    _validate_positive(voltage_v, "Voltage")
+    _validate_nonnegative(voltage_v, "Voltage")
     _validate_positive(resistance_ohm, "Resistance")
     current_a = voltage_v / resistance_ohm
     power_w = voltage_v * current_a
@@ -39,7 +46,7 @@ def equivalent_resistance(circuit):
 
 def analyze_circuit(voltage_v, circuit):
     """Analyze a nested circuit and return totals and values for each resistor."""
-    _validate_positive(voltage_v, "Voltage")
+    _validate_nonnegative(voltage_v, "Voltage")
     total_resistance = equivalent_resistance(circuit)
     total_current = voltage_v / total_resistance
     resistors = []
@@ -77,11 +84,14 @@ def analyze_circuit(voltage_v, circuit):
     }
 
 
-def _read_number(prompt):
+def _read_number(prompt, allow_zero=False):
     while True:
         try:
             value = float(input(prompt))
-            _validate_positive(value, "Value")
+            if allow_zero:
+                _validate_nonnegative(value, "Value")
+            else:
+                _validate_positive(value, "Value")
             return value
         except ValueError as error:
             print(f"Invalid input: {error}")
@@ -115,7 +125,7 @@ def _read_circuit():
 
 def main():
     print("DC circuit calculator")
-    voltage_v = _read_number("Source voltage (V): ")
+    voltage_v = _read_number("Source voltage (V): ", allow_zero=True)
     circuit = _read_circuit()
     result = analyze_circuit(voltage_v, circuit)
 
