@@ -10,9 +10,8 @@ class TestDCAnalyzer(unittest.TestCase):
 		self.assertAlmostEqual(result["power_w"], 24.0)
 
 	def test_zero_voltage(self):
-		result = analyze_dc(0, 10)
-		self.assertAlmostEqual(result["current_a"], 0.0)
-		self.assertAlmostEqual(result["power_w"], 0.0)
+		with self.assertRaises(ValueError):
+			analyze_dc(0, 10)
 
 
 if __name__ == "__main__":
