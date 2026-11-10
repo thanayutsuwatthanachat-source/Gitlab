@@ -44,17 +44,24 @@ def parse(form):
         if field in VOLTAGE_FIELDS:
             unit = form.get(UNIT_NAMES[field], "V")
             try:
-                values[field] = to_volts(number, unit)
+                converted = to_volts(number, unit)
             except KeyError:
                 errors[field] = BAD_UNIT
+                continue
         elif field in RESISTANCE_FIELDS:
             unit = form.get(UNIT_NAMES[field], "Ω")
             try:
-                values[field] = to_ohms(number, unit)
+                converted = to_ohms(number, unit)
             except KeyError:
                 errors[field] = BAD_UNIT
+                continue
         else:
-            values[field] = number
+            converted = number
+
+        if not math.isfinite(converted):
+            errors[field] = NOT_FINITE
+            continue
+        values[field] = converted
 
     if errors:
         return None, errors

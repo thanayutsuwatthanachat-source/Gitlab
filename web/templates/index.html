@@ -59,11 +59,19 @@
         <p>{{ result.warning.detail }}</p>
       </div>
     </div>
+    {% if result.region == 'active' %}
     <p class="crosscheck">
       Cross-check (exact Th&eacute;venin): <i>I</i><sub>C</sub> {{ exact_display.ic }},
       <i>V</i><sub>CE</sub> {{ exact_display.vce }} &middot;
-      &Delta;<i>I</i><sub>C</sub> {{ "%.1f"|format(result.delta.ic_pct) }}%
+      &Delta;<i>I</i><sub>C</sub> {{ "%.1f"|format(result.delta.ic_pct) }}% &middot;
+      &Delta;<i>V</i><sub>CE</sub> {{ "%.1f"|format(result.delta.vce_pct) }}%
     </p>
+    {% else %}
+    <p class="crosscheck">
+      Cross-check (exact Th&eacute;venin) is not meaningful outside the active
+      region, so it is hidden here.
+    </p>
+    {% endif %}
     {% else %}
     <div class="banner idle">
       <span class="mark" aria-hidden="true">i</span>

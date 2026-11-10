@@ -12,9 +12,9 @@ def approximate(vcc, r1, r2, rc, re, beta, vbe):
     vbb = vcc * r2 / (r1 + r2)
     vb = vbb
     ve = vb - vbe
-    ie = ve / re
-    ic = ie
+    ic = ve / re
     ib = ic / beta
+    ie = ic + ib
     vc = vcc - ic * rc
     return {"ib": ib, "ic": ic, "ie": ie, "vb": vb, "vc": vc, "ve": ve,
             "vce": vc - ve}

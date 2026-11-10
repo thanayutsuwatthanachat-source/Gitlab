@@ -54,6 +54,10 @@ class TestValidation(unittest.TestCase):
         _, errors = parse(form(vbe="0"))
         self.assertIn("vbe", errors)
 
+    def test_huge_value_after_conversion(self):
+        _, errors = parse(form(r2="1e308", r2_unit="MΩ"))
+        self.assertIn("r2", errors)
+
     def test_vbe_compared_after_unit_conversion(self):
         _, errors = parse(form(vcc="12000", vcc_unit="mV", vbe="12"))
         self.assertIn("vbe", errors)

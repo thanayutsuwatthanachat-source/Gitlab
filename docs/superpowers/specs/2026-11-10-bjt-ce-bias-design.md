@@ -72,6 +72,7 @@ VE  = VB - VBE
 IE  = VE / RE
 IC  = IE
 IB  = IC / beta
+IE  = IC + IB
 VC  = VCC - IC * RC
 VCE = VC - VE
 ```

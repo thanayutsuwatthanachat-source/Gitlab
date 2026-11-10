@@ -11,11 +11,15 @@ class TestApproximate(unittest.TestCase):
         r = approximate(**BASE)
         self.assertAlmostEqual(r["vb"], 2.1639, places=3)
         self.assertAlmostEqual(r["ve"], 1.4639, places=3)
-        self.assertAlmostEqual(r["ie"] * 1e3, 1.4639, places=3)
+        self.assertAlmostEqual(r["ie"] * 1e3, 1.4785, places=3)
         self.assertAlmostEqual(r["ic"] * 1e3, 1.4639, places=3)
         self.assertAlmostEqual(r["ib"] * 1e6, 14.639, places=2)
         self.assertAlmostEqual(r["vc"], 8.7793, places=3)
         self.assertAlmostEqual(r["vce"], 7.3154, places=3)
+
+    def test_ie_equals_ic_plus_ib(self):
+        r = approximate(**BASE)
+        self.assertAlmostEqual(r["ie"], r["ic"] + r["ib"], places=12)
 
 
 class TestRegion(unittest.TestCase):
