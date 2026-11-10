@@ -1,0 +1,57 @@
+<svg class="schematic" viewBox="0 0 300 300" role="img"
+     aria-label="NPN common-emitter amplifier with voltage-divider bias">
+
+  <g class="wire">
+    <path d="M60 50 H210"/>
+    <path d="M60 50 V70 M60 110 V160"/>
+    <path d="M60 160 H126"/>
+    <path d="M60 160 V180 M60 220 V250"/>
+    <path d="M210 50 V70 M210 110 V140"/>
+    <path d="M210 140 H170"/>
+    <path d="M210 180 H170"/>
+    <path d="M210 180 V200 M210 240 V265"/>
+  </g>
+
+  <g class="resistor">
+    <path d="M60 70 L52 75 L68 85 L52 95 L68 105 L60 110"/>
+    <path d="M60 180 L52 185 L68 195 L52 205 L68 215 L60 220"/>
+    <path d="M210 70 L202 75 L218 85 L202 95 L218 105 L210 110"/>
+    <path d="M210 200 L202 205 L218 215 L202 225 L218 235 L210 240"/>
+  </g>
+
+  <g class="transistor">
+    <circle cx="150" cy="160" r="26"/>
+    <path class="base-bar" d="M126 146 V174"/>
+    <path d="M126 152 L170 140"/>
+    <path d="M126 168 L170 180"/>
+    <polygon class="arrow" points="170,180 157,176 162,188"/>
+  </g>
+
+  <g class="ground">
+    <path d="M45 250 H75 M50 256 H70 M55 262 H65"/>
+    <path d="M195 265 H225 M200 271 H220 M205 277 H215"/>
+  </g>
+
+  <circle class="node" cx="135" cy="50" r="3"/>
+  <circle class="node" cx="60" cy="160" r="3"/>
+
+  <g class="label">
+    <text x="135" y="38" text-anchor="middle"><tspan font-style="italic">V</tspan><tspan dy="3" font-size="8">CC</tspan><tspan dy="-3"> = {{ values.get('vcc', '') }} {{ values.get('vcc_unit', '') }}</tspan></text>
+
+    <text x="44" y="84" text-anchor="end"><tspan font-style="italic">R</tspan><tspan dy="3" font-size="8">1</tspan></text>
+    <text x="44" y="100" text-anchor="end">{{ values.get('r1', '') }} {{ values.get('r1_unit', '') }}</text>
+
+    <text x="44" y="194" text-anchor="end"><tspan font-style="italic">R</tspan><tspan dy="3" font-size="8">2</tspan></text>
+    <text x="44" y="210" text-anchor="end">{{ values.get('r2', '') }} {{ values.get('r2_unit', '') }}</text>
+
+    <text x="226" y="84"><tspan font-style="italic">R</tspan><tspan dy="3" font-size="8">C</tspan></text>
+    <text x="226" y="100">{{ values.get('rc', '') }} {{ values.get('rc_unit', '') }}</text>
+
+    <text x="226" y="214"><tspan font-style="italic">R</tspan><tspan dy="3" font-size="8">E</tspan></text>
+    <text x="226" y="230">{{ values.get('re', '') }} {{ values.get('re_unit', '') }}</text>
+
+    <text x="180" y="150"><tspan font-style="italic">Q</tspan><tspan dy="3" font-size="8">1</tspan></text>
+    <text x="180" y="164">NPN</text>
+    <text x="180" y="178">(&beta; = {{ values.get('beta', '') }})</text>
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 02: BJT DC Bias Web App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="page-header">
+    <svg class="chip" viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="12" y="12" width="24" height="24" rx="4" fill="#e6f6f8" stroke="#0f7b8a" stroke-width="2"/>
+      <rect x="19" y="19" width="10" height="10" rx="2" fill="#0f7b8a"/>
+      <g stroke="#0f7b8a" stroke-width="2" stroke-linecap="round">
+        <path d="M18 12V6M24 12V6M30 12V6M18 42v-6M24 42v-6M30 42v-6"/>
+        <path d="M12 18H6M12 24H6M12 30H6M42 18h-6M42 24h-6M42 30h-6"/>
+      </g>
+    </svg>
+    <div class="titles">
+      <h1>Lab 02: BJT DC Bias Web App</h1>
+      <p>ENG29 2121 &ndash; Common Emitter (Voltage Divider Bias)</p>
+    </div>
+    <div class="badge">
+      <span class="code-icon">&lt;/&gt;</span>
+      <span>Computer Programming for<br>Electrical Engineers</span>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="goal">
+    <span class="goal-pill">&#127919; Week 2 Goal</span>
+    <p><strong>Rough target for this lab:</strong> Build a Flask web app that takes
+      the circuit parameters, computes the BJT DC bias
+      (<i>V</i><sub>B</sub>, <i>V</i><sub>E</sub>, <i>V</i><sub>C</sub>,
+      <i>V</i><sub>CE</sub>, <i>I</i><sub>B</sub>, <i>I</i><sub>C</sub>,
+      <i>I</i><sub>E</sub>) for a common-emitter amplifier with voltage-divider
+      bias, and displays the results.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="layout">
+
+  <form class="card inputs" method="post" action="/solve" novalidate>
+    <h2><span class="ico">&#9881;</span> Input Parameters</h2>
+    <div class="rows">
+      {% for field in fields %}
+      <div class="row">
+        <label for="{{ field.name }}">
+          <i>{{ field.symbol }}</i>{% if field.sub %}<sub>{{ field.sub }}</sub>{% endif %}
+          <span class="hint">({{ field.hint }})</span>
+        </label>
+        <input id="{{ field.name }}" name="{{ field.name }}" type="text"
+               inputmode="decimal" autocomplete="off"
+               value="{{ values.get(field.name, '') }}">
+        {% if field.units %}
+          {% set current_unit = values.get(field.name ~ '_unit') %}
+          <select name="{{ field.name }}_unit" aria-label="{{ field.name }} unit">
+            {% for unit in field.units %}
+            <option value="{{ unit }}"{% if unit == current_unit %} selected{% endif %}>{{ unit }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <span class="unit-static">&ndash;</span>
+        {% endif %}
+        {% if errors.get(field.name) %}
+        <p class="err">{{ errors.get(field.name) }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <button type="submit"><span aria-hidden="true">&#9638;</span> Calculate DC Bias</button>
+  </form>
+
+  <section class="card circuit">
+    <h2><span class="ico">&#9889;</span> Circuit: Common-Emitter Amplifier</h2>
+    {% include "_circuit.html" %}
+  </section>
+
+  <section class="card results">
+    <h2><span class="ico">&#128202;</span> DC Bias Results</h2>
+    <table>
+      <tbody>
+        {% for symbol, sub, key in rows %}
+        <tr>
+          <th><i>{{ symbol }}</i><sub>{{ sub }}</sub></th>
+          <td>{% if display.get(key) %}{{ display[key] }}{% else %}<span class="empty">&mdash;</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if result %}
+    <div class="banner {{ result.warning.level }}">
+      <span class="mark" aria-hidden="true">{% if result.warning.level == 'ok' %}&#10004;{% elif result.warning.level == 'warn' %}!{% else %}&#10005;{% endif %}</span>
+      <div>
+        <strong>{{ result.warning.title }}</strong>
+        <p>{{ result.warning.detail }}</p>
+      </div>
+    </div>
+    <p class="crosscheck">
+      Cross-check (exact Th&eacute;venin): <i>I</i><sub>C</sub> {{ exact_display.ic }},
+      <i>V</i><sub>CE</sub> {{ exact_display.vce }} &middot;
+      &Delta;<i>I</i><sub>C</sub> {{ "%.1f"|format(result.delta.ic_pct) }}%
+    </p>
+    {% else %}
+    <div class="banner idle">
+      <span class="mark" aria-hidden="true">i</span>
+      <div>
+        <strong>Waiting for input</strong>
+        <p>Press Calculate DC Bias to solve the operating point.</p>
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+</section>
+{% endblock %}
