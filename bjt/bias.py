@@ -1,10 +1,18 @@
-"""DC bias solvers for an NPN voltage-divider common-emitter stage.
+"""DC bias solvers for an NPN common-emitter stage.
+
+Lab 02: voltage-divider bias only.
+Lab 03: adds fixed bias and single-supply emitter bias, selected by solve_mode().
 
 All arguments are in base units: volts and ohms.
 Every solver returns the same keys: ib, ic, ie, vb, vc, ve, vce.
 """
 
 VCE_SAT = 0.2
+
+MODE_DIVIDER = "divider"
+MODE_FIXED = "fixed"
+MODE_EMITTER = "emitter"
+MODES = (MODE_DIVIDER, MODE_FIXED, MODE_EMITTER)
 
 
 def approximate(vcc, r1, r2, rc, re, beta, vbe):
@@ -133,3 +141,95 @@ def _percent(primary, reference):
     if reference == 0:
         return 0.0
     return abs(primary - reference) / abs(reference) * 100
+
+
+# --------------------------------------------------------------------------
+# Lab 03: fixed bias and single-supply emitter bias
+# --------------------------------------------------------------------------
+
+
+def _from_ib(ib, vcc, rc, re, beta, vbe):
+    """Common tail: currents and node voltages from I_B (base units)."""
+    ic = beta * ib
+    ie = (1 + beta) * ib
+    ve = ie * re
+    vb = vbe + ve
+    vc = vcc - ic * rc
+    return {"ib": ib, "ic": ic, "ie": ie, "vb": vb, "vc": vc, "ve": ve,
+            "vce": vc - ve}
+
+
+def fixed(vcc, rb, rc, beta, vbe):
+    """Fixed bias: R_B from VCC to base, emitter grounded (R_E = 0).
+
+    I_B = (VCC - VBE) / R_B
+    """
+    ib = (vcc - vbe) / rb
+    return _from_ib(ib, vcc, rc, 0.0, beta, vbe)
+
+
+def emitter(vcc, rb, rc, re, beta, vbe):
+    """Single-supply emitter bias: R_B to base, R_E from emitter to ground.
+
+    I_B = (VCC - VBE) / [R_B + (1 + beta) * R_E]
+    """
+    ib = (vcc - vbe) / (rb + (1 + beta) * re)
+    return _from_ib(ib, vcc, rc, re, beta, vbe)
+
+
+def region_for(values):
+    """Forward-active check for the two modes added in Lab 03.
+
+    Cutoff and saturation are only reported here: the worksheet does not ask
+    for a re-solve outside the forward-active region.
+    """
+    if values["ib"] <= 0:
+        return "cutoff"
+    if values["vce"] <= VCE_SAT:
+        return "saturation"
+    return "active"
+
+
+def warning_for_mode(region, vce):
+    if region == "cutoff":
+        return {
+            "level": "warn",
+            "title": "Cutoff region",
+            "detail": ("I_B ≤ 0 — V_BE is not enough to forward bias the "
+                       "base-emitter junction, so the model stops here"),
+        }
+    if region == "saturation":
+        return {
+            "level": "bad",
+            "title": "Saturation warning",
+            "detail": (f"VCE = {vce:.2f} V ≤ {VCE_SAT} V — the forward-active "
+                       "model is no longer valid"),
+        }
+    return {
+        "level": "ok",
+        "title": "Active region OK",
+        "detail": f"VCE = {vce:.2f} V > {VCE_SAT} V (forward active)",
+    }
+
+
+def solve_mode(mode, values):
+    """Dispatch on the selected circuit. Divider keeps the Lab 02 result."""
+    if mode == MODE_DIVIDER:
+        return dict(solve(**values), mode=mode)
+    if mode == MODE_FIXED:
+        raw = fixed(**values)
+    elif mode == MODE_EMITTER:
+        raw = emitter(**values)
+    else:
+        raise ValueError(f"ไม่รู้จักโหมด '{mode}'")
+
+    region = region_for(raw)
+    return {
+        "values": raw,
+        "region": region,
+        "warning": warning_for_mode(region, raw["vce"]),
+        "exact": None,
+        "nodal": None,
+        "delta": None,
+        "mode": mode,
+    }
