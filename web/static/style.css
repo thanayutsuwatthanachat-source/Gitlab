@@ -275,3 +275,21 @@ button:hover { filter: brightness(1.06); }
   .page-header { flex-wrap: wrap; }
   .badge { margin-left: 0; }
 }
+
+/* Lab 03: mode selector bar */
+.modebar { margin-bottom: 16px; }
+.modebar form { margin: 0; }
+.modebar .row { grid-template-columns: 1fr 200px 74px; }
+.mode-select { grid-column: span 2; }
+.modebar button { width: auto; margin-top: 10px; padding: 9px 18px; font-size: 13.5px; }
+.modebar .crosscheck { margin-top: 8px; }
+.mode-tag {
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #e8f1fb;
+  border: 1px solid #d3e3f5;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+}
