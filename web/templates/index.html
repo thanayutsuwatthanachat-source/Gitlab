@@ -2,7 +2,12 @@
 {% block content %}
 
 <section class="card modebar">
-  <h2><span class="ico">&#9881;</span> Circuit Mode</h2>
+  <h2>
+    <span class="ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.35.4.65.73.85.3.2.66.3 1.02.3H21a2 2 0 1 1 0 4h-.09c-.36 0-.72.1-1.02.3-.33.2-.59.5-.73.85z"/></svg>
+    </span>
+    Circuit Mode
+  </h2>
   <form method="get" action="/">
     <div class="rows">
       <div class="row">
@@ -28,7 +33,12 @@
 <section class="layout">
 
   <form class="card inputs" method="post" action="/solve" novalidate>
-    <h2><span class="ico">&#9881;</span> Input Parameters</h2>
+    <h2>
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+      </span>
+      Input Parameters
+    </h2>
     <input type="hidden" name="mode" value="{{ mode }}">
     <div class="rows">
       {% for field in fields %}
@@ -56,16 +66,28 @@
       </div>
       {% endfor %}
     </div>
-    <button type="submit"><span aria-hidden="true">&#9638;</span> Calculate DC Bias</button>
+    <button type="submit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8M12 8v8"/></svg>
+      Calculate DC Bias
+    </button>
   </form>
 
   <section class="card circuit">
-    <h2><span class="ico">&#9889;</span> Circuit: {{ mode_label }}</h2>
+    <h2>
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </span>
+      Circuit: {{ mode_label }}
+    </h2>
     {% include "_circuit.html" %}
   </section>
 
   <section class="card results">
-    <h2><span class="ico">&#128202;</span> DC Bias Results
+    <h2>
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+      </span>
+      DC Bias Results
       {% if mode_label %}<span class="mode-tag">{{ mode_label }}</span>{% endif %}
     </h2>
     <table>
