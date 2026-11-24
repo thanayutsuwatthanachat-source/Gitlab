@@ -6,6 +6,16 @@ Flask web app for one voltage-divider CE reference circuit: **DC** operating poi
 (`.op`), **AC** Bode magnitude and phase (`.ac`), and **Transient** Vin/Vout
 (`.tran`) from real ngspice runs. The three Lab 03 analytical modes remain at `/`.
 
+### ผลทดสอบและภาพหน้าจอ
+
+- **[รายงาน Playwright MCP: ผ่าน B1–B8](docs/evidence/playwright-b1-b8.md)** — ค่าที่อ่านจากหน้าเว็บ, ngspice log และหลักฐานแต่ละกรณี
+- [ตารางสรุป B1–B8](docs/validation.md#lab-04--browser-acceptance) · [กราฟ Transient](docs/evidence/lab04-transient.png) · [ภาพบนมือถือ](docs/evidence/lab04-mobile.png)
+
+![หน้าจอ Lab 04 แสดงกราฟ Bode จาก ngspice](docs/evidence/lab04-ac-desktop.png)
+
+> GitHub แสดงซอร์สโค้ด รายงาน และภาพหน้าจอ ไม่ได้รันตัวจำลอง Flask/ngspice
+> หากต้องการกด Run และปรับค่า ให้เปิดจากเครื่องที่รันเซิร์ฟเวอร์ตามขั้นตอนด้านล่าง
+
 ### Setup and run
 
 1. Install Python 3 and [ngspice](https://ngspice.sourceforge.io/download.html).
