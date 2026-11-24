@@ -3,11 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lab 03: BJT DC Bias Web App</title>
+  <title>{% block title %}Lab 03: BJT DC Bias Web App{% endblock %}</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='12' y='12' width='24' height='24' rx='5' fill='%23ecfeff' stroke='%230e7490' stroke-width='2'/%3E%3Crect x='19' y='19' width='10' height='10' rx='2' fill='%230e7490'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block head %}{% endblock %}
 </head>
-<body>
+<body{% block body_attrs %}{% endblock %}>
+  {% block header %}
   <header class="page-header">
     <svg class="chip" viewBox="0 0 48 48" aria-hidden="true">
       <rect x="12" y="12" width="24" height="24" rx="5" fill="#ecfeff" stroke="#0e7490" stroke-width="2"/>
@@ -26,11 +28,19 @@
       <span>Computer Programming for<br>Electrical Engineers</span>
     </div>
   </header>
+  {% endblock %}
 
   <main>
+    {% block navigation %}
+    <nav class="lab-switch" aria-label="Lab workspaces">
+      <a href="{{ url_for('index') }}" aria-current="page">Lab 03 · DC Bias</a>
+      <a href="{{ url_for('simulator') }}">Lab 04 · CE Simulator</a>
+    </nav>
+    {% endblock %}
     {% block content %}{% endblock %}
   </main>
 
+  {% block footer %}
   <footer class="goal">
     <span class="goal-pill">Week 3 Goal</span>
     <p><strong>Rough target for this lab:</strong> Keep the Lab 02 voltage-divider
@@ -40,5 +50,6 @@
       <i>V</i><sub>C</sub>, <i>V</i><sub>CE</sub>, <i>I</i><sub>B</sub>,
       <i>I</i><sub>C</sub>, <i>I</i><sub>E</sub>) for all three.</p>
   </footer>
+  {% endblock %}
 </body>
 </html>

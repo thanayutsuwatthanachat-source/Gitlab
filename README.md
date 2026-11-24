@@ -1,5 +1,60 @@
 # Gitlab
 
+## Lab 04 — BJT Common-Emitter Amplifier Simulator
+
+Flask web app for one voltage-divider CE reference circuit: **DC** operating point
+(`.op`), **AC** Bode magnitude and phase (`.ac`), and **Transient** Vin/Vout
+(`.tran`) from real ngspice runs. The three Lab 03 analytical modes remain at `/`.
+
+### Setup and run
+
+1. Install Python 3 and [ngspice](https://ngspice.sourceforge.io/download.html).
+   On Windows, use the batch/console executable (`ngspice_con.exe`) from the
+   distribution. Add its folder to `PATH` or set `NGSPICE_BIN` to the full
+   executable path. On Debian/Ubuntu: `sudo apt install ngspice`; on macOS:
+   `brew install ngspice`.
+2. From the project folder, install Flask and start the server (PowerShell):
+
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+   # Set this only if ngspice is not already found on PATH:
+   $env:NGSPICE_BIN = 'C:\path\to\ngspice_con.exe'
+   & $env:NGSPICE_BIN --version
+   .\.venv\Scripts\python.exe -m flask --app web.app run
+   ```
+
+   On macOS/Linux, substitute `.venv/bin/python` for `.\.venv\Scripts\python.exe`.
+3. Open <http://127.0.0.1:5000/simulator>. Press **Run DC**, then switch to **AC**
+   or **Transient** and press that mode's Run button. Try RE = 2 kΩ in DC,
+   or 25 mV peak / 2000 Hz in Transient. Use **Run log & provenance** to inspect
+   the netlist and ngspice log. No graph library or frontend build is required.
+
+### Electrical and software model
+
+- Default circuit: 12 V, R1/R2 = 100/22 kΩ, RC/RE = 2.2/1 kΩ, RL = 10 kΩ,
+  Cin/Cout = 10 µF, and a sine source of 10 mV peak at 1 kHz. RE is unbypassed.
+- The supplied materials did not include an instructor model file. The app uses
+  `LAB_NPN`, a **generic teaching model** with a published model card in
+  `bjt/spice.py` and the UI. It is not a validated device model. The analytical
+  Lab 03 approximation (fixed β = 100 and VBE = 0.70 V) is shown separately.
+- Vin is at the source before Cin; Vout is across RL after Cout. AC uses
+  `Vout/Vin`, an unwrapped phase, and a 0.1 Hz–100 MHz sweep. The −3 dB
+  crossings are relative to the 1 kHz sample, interpolated on log-frequency.
+  Transient displays the last four of 12 simulated cycles, not a guaranteed
+  steady-state trace for every component combination.
+- `bjt/spice.py` validates form values, writes a numeric netlist in a temporary
+  directory, calls the solver with a 12-second timeout, and parses its ASCII
+  vectors. `web/plots.py` prepares the SVG plots from those vectors. A failed
+  run cannot reuse prior results.
+
+Tested with **Python 3.12.7 / Windows / ngspice 38 / Chrome via Playwright MCP**.
+Run `python -m unittest discover -v` with the same Python environment; the
+solver integration test is skipped if ngspice is not configured.
+See [B1–B8 results and screenshots](docs/validation.md#lab-04--browser-acceptance).
+
+---
+
 ## โปรแกรมคำนวณวงจรไฟฟ้ากระแสตรง (`electrical.py`)
 
 คำอธิบาย: โปรแกรมคำนวณวงจรไฟฟ้ากระแสตรงที่ออกแบบมาเพื่อวิเคราะห์หาค่ากระแสไฟฟ้า แรงดันไฟฟ้า และกำลังไฟฟ้าในวงจรตัวต้านทาน ช่วยให้ผู้ใช้งานคำนวณวงจรแบบอนุกรม ขนาน และผสมได้อย่างรวดเร็วและแม่นยำ พร้อมแสดงผลการคำนวณในแต่ละจุดของวงจรเพื่อใช้ในการศึกษาหรือออกแบบ

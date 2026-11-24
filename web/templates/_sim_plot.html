@@ -1,0 +1,16 @@
+<svg viewBox="0 0 420 195" role="img" aria-label="{{ chart.title }}: {{ chart.y_label }} versus {{ chart.x_label }}">
+  {% for position, text in chart.y_ticks %}
+  <line class="plot-grid" x1="65" x2="395" y1="{{ position }}" y2="{{ position }}"/>
+  <text x="59" y="{{ position }}" dy=".34em" text-anchor="end">{{ text }}</text>
+  {% endfor %}
+  {% for position, text in chart.x_ticks %}
+  <line class="plot-grid" x1="{{ position }}" x2="{{ position }}" y1="12" y2="153"/>
+  <text x="{{ position }}" y="169" text-anchor="middle">{{ text }}</text>
+  {% endfor %}
+  <path class="plot-axis" d="M65 12V153H395"/>
+  <text class="plot-label" x="230" y="189" text-anchor="middle">{{ chart.x_label }}</text>
+  <text class="plot-label" x="11" y="83" text-anchor="middle" transform="rotate(-90 11 83)">{{ chart.y_label }}</text>
+  {% for curve in chart.curves %}
+  <polyline class="plot-trace {{ curve.color }}" points="{{ curve.points }}"/>
+  {% endfor %}
+</svg>

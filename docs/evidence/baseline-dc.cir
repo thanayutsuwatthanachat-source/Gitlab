@@ -1,0 +1,17 @@
+Lab 04 common-emitter voltage-divider reference
+.options filetype=ascii temp=27
+VCC vcc 0 12
+Vin vin 0 DC 0 AC 1 SIN(0 0.01 1000)
+R1 vcc b 100000
+R2 b 0 22000
+RC vcc csense 2200
+Vsense csense c 0
+RE e 0 1000
+Cin vin b 1e-05
+Cout c out 1e-05
+RL out 0 10000
+Q1 c b e LAB_NPN
+.model LAB_NPN NPN(IS=1e-14 BF=100 VAF=100 CJE=20p CJC=8p TF=0.35n)
+.op
+.save v(b) v(e) v(c) i(vsense)
+.end

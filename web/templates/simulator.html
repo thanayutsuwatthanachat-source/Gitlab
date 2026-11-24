@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Lab 04 · BJT Amplifier Simulator{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='simulator.css') }}">{% endblock %}
+{% block body_attrs %} class="simulator"{% endblock %}
+{% block header %}
+<header class="sim-header">
+  <div class="sim-wrap">
+    <h1>BJT Amplifier Simulator</h1>
+    <p>ENG29 2121 · Lab 04 · Common-emitter voltage-divider bias</p>
+  </div>
+</header>
+{% endblock %}
+{% block navigation %}
+<nav class="lab-switch sim-wrap" aria-label="Lab workspaces">
+  <a href="{{ url_for('simulator') }}" aria-current="page">Lab 04 · CE Simulator</a>
+  <a href="{{ url_for('index') }}">Lab 03 · DC Bias</a>
+</nav>
+{% endblock %}
+{% macro inputs(fields) %}
+<div class="sim-inputs">
+  {% for field in fields %}
+  <div class="sim-input">
+    <label for="{{ field.key }}">{{ field.label }} <span>({{ field.unit }})</span></label>
+    <input id="{{ field.key }}" name="{{ field.key }}" value="{{ values[field.key] }}"
+           inputmode="decimal" autocomplete="off" maxlength="32"
+           {% if errors.get(field.key) %}aria-invalid="true" aria-describedby="{{ field.key }}-error"{% endif %}>
+    {% if errors.get(field.key) %}<p class="sim-error" id="{{ field.key }}-error">{{ errors[field.key] }}</p>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}
+{% block content %}
+<form id="sim-form" method="post" action="{{ url_for('simulator') }}" class="sim-wrap sim-grid">
+  {# Enter in a text field runs the current analysis, rather than opening a mode. #}
+  <button type="submit" name="analysis" value="{{ analysis }}" hidden>Run current analysis</button>
+  <section class="sim-panel sim-circuit" aria-labelledby="circuit-title">
+    <h2 id="circuit-title">Circuit &amp; parameters</h2>
+    {% include "_ce_reference.html" %}
+    <fieldset><legend>DC bias network</legend>{{ inputs(bias_fields) }}</fieldset>
+    {% if analysis != 'dc' %}<fieldset><legend>Coupling &amp; load</legend>{{ inputs(coupling_fields) }}</fieldset>{% endif %}
+    {% if analysis == 'tran' %}<fieldset><legend>Sine source</legend>{{ inputs(source_fields) }}</fieldset>{% endif %}
+  </section>
+
+  <section class="sim-panel sim-workspace" aria-labelledby="workspace-title">
+    <h2 id="workspace-title">Run a simulation</h2>
+    <nav class="sim-modes" aria-label="Analysis mode">
+      {% for key, (label, directive) in analyses.items() %}
+      <button type="submit" name="analysis" value="{{ key }}" formmethod="get"
+              {% if analysis == key %} aria-current="true"{% endif %}>{{ label }} <code>{{ directive }}</code></button>
+      {% endfor %}
+    </nav>
+    {% if analysis == 'dc' %}
+      <p>หาจุดทำงาน DC ของทรานซิสเตอร์ โดย Cin และ Cout เปิดวงจรในโหมดนี้</p>
+    {% elif analysis == 'ac' %}
+      <p>กวาดความถี่ 0.1 Hz–100 MHz โดยใช้สัญญาณ AC ขนาดเล็ก วัด Vin ก่อน Cin และ Vout คร่อม RL</p>
+    {% else %}
+      <p>ดู Vin ก่อน Cin และ Vout คร่อม RL ใน 4 คาบสุดท้ายจากการจำลอง 12 คาบ</p>
+    {% endif %}
+    <button class="sim-run" type="submit" name="analysis" value="{{ analysis }}">Run {{ analyses[analysis][0] }}</button>
+
+    {% if errors or failure %}
+    <div class="sim-notice sim-error" role="alert">
+      {% if errors %}<strong>Input error</strong><p>{{ errors.get('analysis', 'ตรวจค่าที่ทำเครื่องหมาย แล้วกด Run อีกครั้ง') }}</p>
+      {% else %}<strong>Simulation unavailable</strong><p>{{ failure }}</p>{% endif %}
+    </div>
+    {% elif charts %}
+      {% for chart in charts %}
+      <figure class="sim-chart">
+        <h3>{{ chart.title }}</h3>
+        {% include "_sim_plot.html" %}
+        <figcaption>{% for curve in chart.curves %}<span class="{{ curve.color }}">{{ curve.name }}</span>{% endfor %}</figcaption>
+      </figure>
+      {% endfor %}
+    {% elif evidence %}
+      <div class="sim-notice"><strong>DC operating point calculated</strong><p>ดูแรงดันเทียบกราวด์ กระแสคอลเลกเตอร์ และผลคำนวณอ้างอิงทางด้านผลลัพธ์</p></div>
+    {% else %}
+      <div class="sim-notice"><strong>Ready to run</strong><p>กด Run เพื่อเริ่มจำลองด้วย ngspice</p></div>
+    {% endif %}
+  </section>
+
+  <section class="sim-panel sim-results" aria-labelledby="results-title">
+    <h2 id="results-title">Results</h2>
+    <p class="sim-status {% if evidence %}success{% elif failure or errors %}failed{% endif %}" role="status">
+      {% if evidence %}Succeeded{% elif failure %}Run failed{% elif errors %}Invalid input{% else %}Not run{% endif %}
+    </p>
+    <p class="sim-source">ngspice batch · {{ model }} · 27 °C</p>
+    {% if summary %}
+    <dl class="sim-metrics">
+      {% for label, value in summary.items() %}<div><dt>{{ label }}</dt><dd>{{ value }}</dd></div>{% endfor %}
+    </dl>
+    {% if analysis == 'dc' %}
+    <p class="sim-source">IC positive into Q1 collector. VCE = VC − VE.</p>
+    {% elif analysis == 'ac' %}
+    <p class="sim-source">Phase is unwrapped. Cutoffs are relative to the sampled gain at 1 kHz.</p>
+    {% else %}
+    <p class="sim-source">Compare Vin and Vout peaks to check the expected CE inversion in the passband.</p>
+    {% endif %}
+    {% endif %}
+    {% if reference %}
+    <div class="sim-reference">
+      <h3>Analytical reference · Lab 03</h3>
+      <p>IC {{ reference.ic }} · VCE {{ reference.vce }}</p>
+      <p class="sim-source">Python approximation, β = 100 and VBE = 0.70 V. ไม่ใช่ผล ngspice</p>
+    </div>
+    {% endif %}
+    {% if evidence or log %}
+    <details class="sim-evidence">
+      <summary>Run log &amp; provenance</summary>
+      {% if evidence %}
+        <p>ASCII vectors from <code>run.raw</code> · SHA-256 <code>{{ evidence.digest }}</code></p>
+        <h3>Generated netlist</h3><pre>{{ evidence.netlist }}</pre>
+      {% endif %}
+      <h3>ngspice log</h3><pre>{{ evidence.log or log or 'No log text.' }}</pre>
+    </details>
+    {% endif %}
+    <details class="sim-evidence">
+      <summary>Model parameters</summary>
+      <p>Generic teaching NPN, not a part-specific datasheet model.</p>
+      <pre>{{ model_card }}</pre>
+    </details>
+  </section>
+</form>
+{% endblock %}
+{% block footer %}
+<footer class="sim-wrap sim-footer">CE reference · No emitter bypass capacitor · Local Flask / ngspice</footer>
+{% endblock %}

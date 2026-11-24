@@ -3,8 +3,10 @@
 from flask import Flask, render_template, request
 
 from bjt.bias import solve_mode
+from bjt import spice
 from bjt.units import RESISTANCE_UNITS, VOLTAGE_UNITS, format_engineering
 from bjt.validation import BAD_MODE, MODE_FIELDS, parse
+from web.plots import prepare_plots
 
 MODE_LABELS = {
     "divider": "Voltage Divider Bias",
@@ -114,6 +116,49 @@ def create_app():
             return _render(mode, request.form, errors), 400
 
         return _render(mode, request.form, {}, solve_mode(mode, parsed))
+
+    @app.route("/simulator", methods=["GET", "POST"])
+    def simulator():
+        submitted = request.method == "POST"
+        source = request.form if submitted else request.args
+        selection = source.get("analysis", "dc")
+        analysis = selection if selection in spice.ANALYSES else "dc"
+        values = {key: source.get(key, "" if submitted else default)
+                  for key, default in spice.DEFAULTS.items()}
+        summary, charts, evidence, reference, errors = {}, [], {}, {}, {}
+        failure, log, status = "", "", 200
+        if submitted:
+            params, errors = spice.parse_inputs(selection, values)
+            if errors:
+                status = 400
+            else:
+                try:
+                    rows, evidence = spice.run_spice(analysis, params)
+                    if analysis == "dc":
+                        vb, ve, vc, ic = (rows[key][0] for key in
+                                          ("v(b)", "v(e)", "v(c)", "i(vsense)"))
+                        summary = {
+                            label: f"{number:.5g} {unit}" for label, number, unit in (
+                                ("VB", vb, "V"), ("VE", ve, "V"), ("VC", vc, "V"),
+                                ("VCE", vc-ve, "V"), ("IC", 1000*ic, "mA"),
+                            )
+                        }
+                        if params["vcc"] > 0.7:
+                            bias = {field.key: params[field.key] for field in spice.BIAS_FIELDS}
+                            ref = solve_mode("divider", dict(bias, beta=100, vbe=0.7))
+                            reference = _display(ref["values"])
+                    else:
+                        charts, summary = prepare_plots(analysis, rows)
+                except spice.SpiceError as exc:
+                    evidence, failure, log, status = {}, str(exc), exc.log, 503
+        return render_template(
+            "simulator.html", analysis=analysis, analyses=spice.ANALYSES,
+            bias_fields=spice.BIAS_FIELDS, coupling_fields=spice.COUPLING_FIELDS,
+            source_fields=spice.SOURCE_FIELDS, values=values, errors=errors,
+            model=spice.MODEL, model_card=spice.MODEL_CARD, charts=charts,
+            summary=summary, evidence=evidence, reference=reference,
+            failure=failure, log=log,
+        ), status
 
     return app
 

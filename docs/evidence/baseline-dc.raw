@@ -1,0 +1,16 @@
+Title: lab 04 common-emitter voltage-divider reference
+Date: Tue Nov 24 17:27:24  2026
+Plotname: Operating Point
+Flags: real
+No. Variables: 4
+No. Points: 1
+Variables:
+	0	v(b)	voltage
+	1	v(e)	voltage
+	2	v(c)	voltage
+	3	i(vsense)	current
+Values:
+0		1.949112053392473e+00
+	1.289453694188142e+00
+	9.189410182055504e+00
+	1.277540826338409e-03
