@@ -23,8 +23,21 @@ Lab 04 และกด Run ได้ทันที หน้า Lab 03 ยั�
 ### ผลทดสอบและกราฟ B1–B8
 
 **ผ่านครบ 8 กรณี** บนหน้าเว็บจริงด้วย Playwright MCP และ ngspice 38
-กราฟและผลหลักแสดงด้านล่างทันที ส่วน netlist และ log อยู่ใน
-[รายงานฉบับละเอียด](docs/evidence/playwright-b1-b8.md)
+
+| Case | Action ใน Browser | สิ่งที่ตรวจ / Expected Behavior | ผลจริงและหลักฐาน |
+| --- | --- | --- | --- |
+| **B1 · Regression** | เปิด Fixed, Emitter และ Divider แล้วกรอกค่าอ้างอิง Lab 03 | สลับโหมดได้ และค่า IC / VCE ตรงกับผลเดิม | **PASS** · Fixed 1.13 mA / 9.51 V; Emitter 1.03 mA / 8.71 V; Divider 1.46 mA / 7.32 V |
+| **B2 · DC SPICE** | เปิด CE Reference แล้วกด Run DC | แสดง VB, VE, VC, VCE และ IC จาก `.op` พร้อมโมเดลและสถานะ | **PASS** · `Succeeded`, `LAB_NPN`, IC 1.2775 mA, VCE 7.9 V · [หน้าจอ](docs/evidence/lab04-dc.png) · [ผลดิบ](docs/evidence/baseline-dc.raw) |
+| **B3 · Change RE** | เปลี่ยนเฉพาะ RE จาก 1 เป็น 2 kΩ แล้วกด Run DC ซ้ำ | จุดทำงานเปลี่ยนตาม RE ไม่ใช่ผลค้างจากรอบก่อน | **PASS** · IC 1.2775 → 0.69586 mA และ VCE 7.9 → 9.0646 V · [ก่อน](docs/evidence/lab04-dc.png) / [หลัง](docs/evidence/lab04-re-2k.png) |
+| **B4 · AC** | กด Run AC แล้วอ่านกราฟ Bode | แกนความถี่ (Hz), Gain (dB) และ Phase (°) มาจากการรันจริง | **PASS** · 361 จุด; ที่ 1 kHz ได้ 4.860 dB และ −179.87° · กราฟด้านล่าง |
+| **B5 · Transient** | กด Run Transient ที่ 10 mV peak, 1 kHz | เห็น Vin/Vout ตามเวลา มีหน่วย ms และ mV และ Vout กลับเฟส | **PASS** · Vin 20 mVpp / Vout 34.99 mVpp; กลับเฟสตามผลดิบ · กราฟด้านล่าง |
+| **B6 · Change Source** | เปลี่ยนเป็น 25 mV peak, 2 kHz แล้วรันซ้ำ | ทั้งรูปคลื่นและช่วงเวลาตอบสนองตามอินพุตที่เปลี่ยน | **PASS** · Vin 49.99 mVpp / Vout 87.48 mVpp; ช่วงที่แสดงเปลี่ยนจาก 8–12 เป็น 4–6 ms · กราฟก่อน–หลังด้านล่าง |
+| **B7 · Invalid / Fail** | ใส่ RE = 0 แล้วทดสอบแยกอีกครั้งเมื่อไม่พบ ngspice | แสดงข้อผิดพลาด ไม่แสดงกราฟเก่าหรือสถานะสำเร็จ | **PASS** · HTTP 400 `Invalid input` และ HTTP 503 `Run failed` · ภาพทั้งสองกรณีด้านล่าง |
+| **B8 · UI** | เปิดที่ 1280 × 900 และ 390 × 844 แล้วสลับ AC → Transient บนมือถือ | ปุ่ม กราฟ และหน่วยไม่ถูกตัด ไม่มีการเลื่อนแนวนอน | **PASS** · กราฟและปุ่มอยู่ในจอทั้งสองขนาด; กด Enter เพื่อรันบนมือถือได้ · ภาพทั้งสองขนาดด้านล่าง |
+
+**วิธีตรวจ:** เปิดหน้า → อ่าน snapshot → เลือกโหมด/กรอกค่า → กด Run → อ่านผล
+→ เทียบกับค่าอ้างอิงหรือผล ngspice → บันทึกภาพ
+ดู [netlist และ ngspice log ในรายงานฉบับละเอียด](docs/evidence/playwright-b1-b8.md)
 
 #### B1 · ตรวจซ้ำ Lab 03
 
