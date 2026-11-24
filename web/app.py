@@ -1,6 +1,8 @@
 """Flask routes only. Engineering lives in bjt/, presentation in templates/."""
 
-from flask import Flask, render_template, request
+import os
+
+from flask import Flask, redirect, render_template, request, url_for
 
 from bjt.bias import solve_mode
 from bjt import spice
@@ -97,9 +99,19 @@ def _render(mode, values, errors, result=None):
 
 def create_app():
     app = Flask(__name__)
+    app.config.update(
+        LAB04_HOME=os.environ.get("LAB04_HOME", "bias"),
+        MAX_CONTENT_LENGTH=16 * 1024,
+    )
+
+    @app.get("/healthz")
+    def health():
+        return ("ok\n", 200) if spice.executable() else ("ngspice unavailable\n", 503)
 
     @app.get("/")
     def index():
+        if app.config["LAB04_HOME"] == "simulator" and "mode" not in request.args:
+            return redirect(url_for("simulator"))
         mode = (request.args.get("mode") or "divider").strip()
         if mode not in MODE_LABELS:
             return _render(None, DEFAULTS, {"mode": BAD_MODE}), 400

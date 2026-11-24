@@ -6,11 +6,21 @@ import unittest
 from unittest.mock import patch
 
 from bjt import spice
-from web.app import app
+from web.app import app, create_app
 from web.plots import prepare_plots
 
 
 class TestSpice(unittest.TestCase):
+    def test_hosted_home_and_health(self):
+        hosted = create_app()
+        hosted.config["LAB04_HOME"] = "simulator"
+        client = hosted.test_client()
+        self.assertTrue(client.get("/").location.endswith("/simulator"))
+        self.assertIn(b"Calculate DC Bias", client.get("/?mode=divider").data)
+        for binary, code in (("/usr/bin/ngspice", 200), (None, 503)):
+            with patch("bjt.spice.executable", return_value=binary):
+                self.assertEqual(client.get("/healthz").status_code, code)
+
     def test_units_and_mode_specific_validation(self):
         dc, errors = spice.parse_inputs("dc", dict(spice.DEFAULTS, amplitude="bad", cin="0"))
         self.assertFalse(errors)

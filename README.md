@@ -6,15 +6,22 @@ Flask web app for one voltage-divider CE reference circuit: **DC** operating poi
 (`.op`), **AC** Bode magnitude and phase (`.ac`), and **Transient** Vin/Vout
 (`.tran`) from real ngspice runs. The three Lab 03 analytical modes remain at `/`.
 
+### เปิดตัวจำลองออนไลน์
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/thanayutsuwatthanachat-source/Gitlab)
+
+GitHub แสดงโค้ดและหลักฐาน แต่ไม่ได้รัน Flask/ngspice ให้ กดปุ่มด้านบน
+เข้าสู่ระบบ Render แล้วอนุมัติการสร้างบริการแผน Free จาก `render.yaml`
+เมื่อสถานะเป็น **Live** ให้เปิด URL `onrender.com` ที่ Render แสดงเพื่อเข้า
+Lab 04 และกด Run ได้ทันที หน้า Lab 03 ยังเปิดได้จากเมนูในแอป
+ปุ่มนี้เป็นลิงก์ตั้งค่า deploy ครั้งแรก ไม่ใช่ URL เว็บที่เปิดใช้งานแล้ว
+
 ### ผลทดสอบและภาพหน้าจอ
 
 - **[รายงาน Playwright MCP: ผ่าน B1–B8](docs/evidence/playwright-b1-b8.md)** — ค่าที่อ่านจากหน้าเว็บ, ngspice log และหลักฐานแต่ละกรณี
 - [ตารางสรุป B1–B8](docs/validation.md#lab-04--browser-acceptance) · [กราฟ Transient](docs/evidence/lab04-transient.png) · [ภาพบนมือถือ](docs/evidence/lab04-mobile.png)
 
 ![หน้าจอ Lab 04 แสดงกราฟ Bode จาก ngspice](docs/evidence/lab04-ac-desktop.png)
-
-> GitHub แสดงซอร์สโค้ด รายงาน และภาพหน้าจอ ไม่ได้รันตัวจำลอง Flask/ngspice
-> หากต้องการกด Run และปรับค่า ให้เปิดจากเครื่องที่รันเซิร์ฟเวอร์ตามขั้นตอนด้านล่าง
 
 ### Setup and run
 

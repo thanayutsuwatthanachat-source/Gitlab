@@ -13,7 +13,7 @@
 {% block navigation %}
 <nav class="lab-switch sim-wrap" aria-label="Lab workspaces">
   <a href="{{ url_for('simulator') }}" aria-current="page">Lab 04 · CE Simulator</a>
-  <a href="{{ url_for('index') }}">Lab 03 · DC Bias</a>
+  <a href="{{ url_for('index', mode='divider') }}">Lab 03 · DC Bias</a>
 </nav>
 {% endblock %}
 {% macro inputs(fields) %}

@@ -1,0 +1,8 @@
+*
+!requirements.txt
+!bjt/
+!bjt/**
+!web/
+!web/**
+**/__pycache__/
+**/*.pyc
