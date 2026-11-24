@@ -6,6 +6,8 @@ Flask web app for one voltage-divider CE reference circuit: **DC** operating poi
 (`.op`), **AC** Bode magnitude and phase (`.ac`), and **Transient** Vin/Vout
 (`.tran`) from real ngspice runs. The three Lab 03 analytical modes remain at `/`.
 
+[ผลทดสอบและกราฟ B1–B8](#browser-results) · [วิธีติดตั้งบนเครื่อง](#setup-and-run)
+
 ### เปิดตัวจำลองออนไลน์
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/thanayutsuwatthanachat-source/Gitlab)
@@ -16,12 +18,62 @@ GitHub แสดงโค้ดและหลักฐาน แต่ไม่
 Lab 04 และกด Run ได้ทันที หน้า Lab 03 ยังเปิดได้จากเมนูในแอป
 ปุ่มนี้เป็นลิงก์ตั้งค่า deploy ครั้งแรก ไม่ใช่ URL เว็บที่เปิดใช้งานแล้ว
 
-### ผลทดสอบและภาพหน้าจอ
+<a name="browser-results"></a>
 
-- **[รายงาน Playwright MCP: ผ่าน B1–B8](docs/evidence/playwright-b1-b8.md)** — ค่าที่อ่านจากหน้าเว็บ, ngspice log และหลักฐานแต่ละกรณี
-- [ตารางสรุป B1–B8](docs/validation.md#lab-04--browser-acceptance) · [กราฟ Transient](docs/evidence/lab04-transient.png) · [ภาพบนมือถือ](docs/evidence/lab04-mobile.png)
+### ผลทดสอบและกราฟ B1–B8
 
-![หน้าจอ Lab 04 แสดงกราฟ Bode จาก ngspice](docs/evidence/lab04-ac-desktop.png)
+**ผ่านครบ 8 กรณี** บนหน้าเว็บจริงด้วย Playwright MCP และ ngspice 38
+กราฟและผลหลักแสดงด้านล่างทันที ส่วน netlist และ log อยู่ใน
+[รายงานฉบับละเอียด](docs/evidence/playwright-b1-b8.md)
+
+#### B1 · ตรวจซ้ำ Lab 03
+
+| โหมด | IC | VCE |
+| --- | ---: | ---: |
+| Fixed Bias | 1.13 mA | 9.51 V |
+| Emitter Bias | 1.03 mA | 8.71 V |
+| Voltage Divider Bias | 1.46 mA | 7.32 V |
+
+#### B2–B3 · DC operating point และเปลี่ยน RE
+
+ngspice ใช้โมเดล `LAB_NPN` ที่ 27 °C ทั้งสองรอบ เมื่อเพิ่มเฉพาะ RE กระแส IC ลดลง
+
+| RE | VB | VE | VC | VCE | IC |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 kΩ (B2) | 1.9491 V | 1.2895 V | 9.1894 V | 7.9 V | 1.2775 mA |
+| 2 kΩ (B3) | 2.0482 V | 1.4045 V | 10.469 V | 9.0646 V | 0.69586 mA |
+
+#### B4 · กราฟ Bode
+
+กราฟ Gain และ Phase จากการกวาด 0.1 Hz–100 MHz จำนวน 361 จุด
+ที่ 1 kHz ได้ **4.860 dB** และ **−179.87°**
+
+![กราฟ Bode ของ Gain และ Phase จาก ngspice บนหน้าเว็บเดสก์ท็อป](docs/evidence/lab04-ac-desktop.png)
+
+#### B5–B6 · กราฟ Transient ก่อนและหลังเปลี่ยน Source
+
+| B5 · 10 mV peak / 1 kHz | B6 · 25 mV peak / 2 kHz |
+| --- | --- |
+| ![รูปคลื่นก่อนเปลี่ยน: Vin และ Vout ช่วง 8–12 ms](docs/evidence/b5-waveform.png) | ![รูปคลื่นหลังเปลี่ยน: Vin และ Vout ช่วง 4–6 ms](docs/evidence/b6-waveform.png) |
+| Vin 20 mVpp · Vout 34.99 mVpp | Vin 49.99 mVpp · Vout 87.48 mVpp |
+
+ทั้งสองกราฟมีแกนเวลาเป็น ms และแรงดันเป็น mV เห็นว่า Vout กลับเฟสเมื่อเทียบกับ Vin
+
+#### B7 · ตรวจข้อความผิดพลาด
+
+| RE = 0 | ไม่พบ ngspice |
+| --- | --- |
+| ![ผลทดสอบ RE เท่ากับศูนย์](docs/evidence/lab04-invalid.png) | ![ผลทดสอบเมื่อไม่มี ngspice](docs/evidence/lab04-engine-unavailable.png) |
+| HTTP 400 · `Invalid input` | HTTP 503 · `Run failed` |
+
+ทั้งสองกรณีไม่แสดงผลเดิมหรือกราฟค้าง
+
+#### B8 · ตรวจหน้าจอเดสก์ท็อปและมือถือ
+
+ตรวจที่ 1280 × 900 (ภาพเดสก์ท็อปใน B4) และ 390 × 844 (ภาพด้านล่าง)
+ไม่พบการเลื่อนแนวนอน ปุ่มและกราฟไม่ถูกตัด
+
+<img src="docs/evidence/lab04-mobile.png" width="280" alt="หน้า Transient บนมือถือ แสดงฟอร์ม ปุ่ม Run กราฟ และผลลัพธ์">
 
 ### Setup and run
 
